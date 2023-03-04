@@ -17,14 +17,14 @@
           max-height: 200px;
           overflow-y: auto;
         }
-        h3.text-center{
-          color: white;
-          display: inline-block;
+        h3.text-center {
+            color: white;
+            display: inline-block;
         }
-        form.form-inline{
-          float: right;
+        form.form-inline {
+            float: right;
         }
-      </style>
+    </style>
 </head>
 
 <body>
@@ -32,16 +32,16 @@
         <div class="row">
             <div class="col-md-9 mx-auto">
                 <div class="jumbotron">
-                    <h1 class="display-4 text-c">Welcome to the News Aggregator!</h1>
+                    <h1 class="display-4 text-center">Welcome to the News Aggregator!</h1>
                     <p class="lead text-center">Get the latest news and updates from around the world.</p>
                 </div>
                 <div class="row">
-                  <div class="col-md-6">
-                    <h3 class="text-center">Top Headlines</h3>
-                </div>
                     <div class="col-md-6">
-                        <form class="form-inline my-2 my-lg-0"action="/" method="POST">
-                            <input class="form-control mr-sm-2" type="text" placeholder="Search..." name="query">
+                        <h3 class="text-center">Top Headlines</h3>
+                    </div>
+                    <div class="col-md-6">
+                        <form class="form-inline my-2 my-lg-0" action="/" method="GET">
+                            <input class="form-control mr-sm-2" type="text" name="query" placeholder="Search">
                             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                         </form>
                     </div>
@@ -49,6 +49,7 @@
                 <div class="card-deck ml-4">
                     {% for article in articles %}
                     <div class="card">
+                        <img class="card-img-top" src="{{ article.top_image }}" alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title">{{ article.title }}</h5>
                             <p class="card-text">{{ article.summary }}</p>
