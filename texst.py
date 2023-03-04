@@ -1,22 +1,47 @@
-from flask import Flask, render_template
-import feedparser
+from googlesearch import search 
+from flask import Flask, render_template, request
+import newspaper
+
 
 app = Flask(__name__)
 
-RSS_FEEDS = {
-    'techcrunch': 'https://techcrunch.com/feed/',
-    'wired': 'https://www.wired.com/feed/rss',
-    'verge': 'https://www.theverge.com/rss/index.xml'
-}
+def google_search(query):
+    results = search(query, num_results=10 )
+    return results
 
-@app.route("/")
-def get_news():
+@app.route("/", methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        query = request.form['query']
+        results = google_search(query)
+    else:
+        query = "Python"  # default search query
+        results = google_search(query)
+
     articles = []
-    for feed in RSS_FEEDS.values():
-        feed_articles = feedparser.parse(feed)['entries']
-        articles.extend(feed_articles)
-    sorted_articles = sorted(articles, key=lambda k: k['published_parsed'], reverse=True)
-    return render_template('index.html', articles=sorted_articles)
+    for url in results:
+        try:
+            article = newspaper.Article(url)
+            article.download()
+            article.parse()
+            article.nlp()
+            articles.append({
+                "title": article.title,
+                "url": article.url,
+                "summary": article.summary
+            })
+        except newspaper.article.ArticleException:
+            continue
+        if len(articles) == 3:
+            break
+    while len(articles) < 3:
+        articles.append({
+            "title": "No article available",
+            "url": "",
+            "summary": ""
+        })
 
-if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    return render_template("indexxx.html", articles=articles, query=query)
+
+if __name__ == "__main__":
+    app.run(debug=True)
