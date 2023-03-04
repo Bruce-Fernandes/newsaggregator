@@ -17,6 +17,20 @@
           max-height: 200px;
           overflow-y: auto;
         }
+        .top-headlines {
+          color: #888;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+        .search-box {
+          display: flex;
+          align-items: center;
+        }
+        .search-input {
+          margin-right: 0.5rem;
+        }
       </style>
 </head>
 
@@ -28,7 +42,13 @@
                     <h1 class="display-4">Welcome to the News Aggregator!</h1>
                     <p class="lead">Get the latest news and updates from around the world.</p>
                 </div>
-                <h3>Top Headlines</h3>
+                <div class="top-headlines">
+                    <h3 class="mb-0">Top Headlines</h3>
+                    <div class="search-box">
+                        <input class="form-control search-input" type="text" placeholder="Search...">
+                        <button class="btn btn-primary">Search</button>
+                    </div>
+                </div>
                 <div class="card-deck ml-4">
                     {% for article in articles %}
                     <div class="card">
@@ -45,4 +65,5 @@
         </div>
     </div>
 </body>
+
 </html>

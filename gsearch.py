@@ -1,7 +1,6 @@
 from googlesearch import search
 from flask import Flask, render_template
 import newspaper
-from newspaper.article import ArticleException
 
 app = Flask(__name__)
 
@@ -13,7 +12,7 @@ def google_search(query):
 def home():
     articles = []
     results = list(google_search("AI news"))
-    for url in results[:3]:
+    for url in results:
         try:
             article = newspaper.Article(url)
             article.download()
@@ -24,9 +23,16 @@ def home():
                 "url": article.url,
                 "summary": article.summary
             })
-        except ArticleException:
-            # Skip the article if it fails to download, parse or extract summary
-            pass
+        except newspaper.article.ArticleException:
+            continue
+        if len(articles) == 3:
+            break
+    while len(articles) < 3:
+        articles.append({
+            "title": "No article available",
+            "url": "",
+            "summary": ""
+        })
     return render_template("index.html", articles=articles)
 
 if __name__ == "__main__":
