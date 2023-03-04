@@ -41,7 +41,7 @@ def index():
             "summary": ""
         })
 
-    return render_template("indexxx.html", articles=articles, query=query)
+    return render_template("index.html", articles=articles, query=query)
 
 if __name__ == "__main__":
     app.run(debug=True)
