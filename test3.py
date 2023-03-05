@@ -13,10 +13,10 @@ def google_search(query):
 def index():
     if request.method == 'POST':
         query = request.form['query']
-        results = google_search(query)
+        results = google_search("latest news on"+query+"site:nytimes")
     else:
-        query = "Python"  # default search query
-        results = google_search(query)
+        query = "latest technology news"  # default search query
+        results = google_search("latest news on"+query)
 
     articles = []
     for url in results:
