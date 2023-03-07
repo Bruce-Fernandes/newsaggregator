@@ -1,14 +1,22 @@
 import time
 import feedparser
 from flask import Flask, render_template, request
+from urllib.parse import urlencode
 
 app = Flask(__name__)
+
 def get_feed_urls(query):
     urls = []
-    url = f"https://news.google.com/search?q={query}&hl=en-US&gl=IN&ceid=IN%3Aen"
+    base_url = "https://news.google.com"
+    params = {
+        "q": query,
+        "hl": "en-US",
+        "gl": "US",
+        "ceid": "US:en"
+    }
+    url = base_url + "/rss/search?" + urlencode(params)
     urls.append(url)
     return urls
-
 
 def parse_feed(feed_url):
     feed = feedparser.parse(feed_url)
@@ -38,7 +46,6 @@ def index():
         articles += parse_feed(url)
         if len(articles) >= 6:
          break
-
 
     unique_articles = []
     for article in articles:
