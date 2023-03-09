@@ -4,12 +4,12 @@ from urllib.parse import urlencode
 from bs4 import BeautifulSoup
 import requests
 import re
-import nltk
-from nltk.tokenize import sent_tokenize
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.summarizers.text_rank import TextRankSummarizer
+from sumy.nlp.tokenizers import Tokenizer
+
 
 app = Flask(__name__)
-
-nltk.download('punkt')
 
 def get_feed_urls(query):
     urls = []
@@ -23,7 +23,6 @@ def get_feed_urls(query):
     url = base_url + "/rss/search?" + urlencode(params)
     urls.append(url)
     return urls
-
 def get_summary(url):
     try:
         response = requests.get(url)
@@ -32,15 +31,25 @@ def get_summary(url):
         article_text = ''
         for p in soup.find_all('p'):
             article_text += p.get_text()
-        # tokenize the article text into sentences and select the first 3
-        # sentences as the summary
-        sentences = sent_tokenize(article_text)
-        summary = ' '.join(sentences[:3])
+
+        # summarize the article using TextRank
+        parser = PlaintextParser.from_string(article_text, Tokenizer("english"))
+        summarizer = TextRankSummarizer()
+        summary = summarizer(parser.document,sentences_count=2)
+
+        # concatenate the summary sentences with a period
+        summary_text = ''
+        for sentence in summary:
+            summary_text += str(sentence) + '. '
+
         # remove any special characters from the summary
-        summary = re.sub(r'[^\w\s]','',summary)
+        summary_text = re.sub(r'[^\w\s.]', '', summary_text)
     except:
-        summary = ''
-    return summary
+        summary_text = ''
+    return summary_text
+
+
+
 
 def parse_feed(feed_url):
     feed = feedparser.parse(feed_url)
@@ -48,14 +57,25 @@ def parse_feed(feed_url):
     for entry in feed.entries:
         if 'title' in entry and 'link' in entry:
             summary = get_summary(entry.link)
-            articles.append({
-                "title": entry.title,
-                "url": entry.link,
-                "summary": summary
-            })
+            if summary and len(summary.split()) >= 15: # check if summary is not empty and has at least 15 words
+                articles.append({
+                    "title": entry.title,
+                    "url": entry.link,
+                    "summary": summary
+                })
+            elif not summary:
+                continue
         if len(articles) == 6:
             break
+    while len(articles) < 6:
+        articles.append({
+            "title": "No article available",
+            "url": "",
+            "summary": ""
+        })
     return articles
+
+
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
