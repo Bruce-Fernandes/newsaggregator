@@ -1,31 +1,32 @@
 import parsefeed
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 import geturls
 import pyrebase
 import loginfunction
 import firebaseconfig
 
 
-def signup(e, passw):
-    firebase = pyrebase.initialize_app(firebaseconfig.firebase_config)
-    auth = firebase.auth()
-    email = e
-    password = passw
-    ur = auth.create_user_with_email_and_password(email, password)
+
+def signup(e,passw):
+   
+    firebase=pyrebase.initialize_app(firebaseconfig.firebase_config)
+    auth=firebase.auth()
+    email=e
+    password=passw
+    ur=auth.create_user_with_email_and_password(email,password)
 
 
 app = Flask(__name__)
-
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('username')
         password = request.form.get('password')
-        l = loginfunction.loginF(email, password)
-        return l
+        l=loginfunction.loginF(email,password)    
+        return render_template("dashboard.html")
     return render_template("login.html")
-
+  
 
 @app.route("/signup", methods=['GET', 'POST'])
 def sign_up():
@@ -34,10 +35,10 @@ def sign_up():
         first_name = request.form.get('email')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
-        signup(email, password2)
-        return redirect(url_for('login'))
-
+        signup(email,password2) 
+       
     return render_template("sign_up.html")
+
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -68,21 +69,6 @@ def index():
         })
 
     return render_template("index.html", articles=unique_articles, query=query)
-
-
-@app.route("/login-page", methods=['GET'])
-def login_page():
-    return render_template("login.html")
-
-
-@app.route("/dashboard-page",methods=['GET'])
-def dashboard_page():
-    return render_template("dashboard.html")
-
-@app.route("/signup-page", methods=['GET'])
-def signup_page():
-    return render_template("sign_up.html")
-
 
 if __name__ == "__main__":
     app.run(debug=True)
