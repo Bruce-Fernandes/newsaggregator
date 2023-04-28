@@ -4,7 +4,7 @@ import geturls
 import pyrebase
 import loginfunction
 import firebaseconfig
-
+import requests
 
 def signup(e, passw):
     firebase = pyrebase.initialize_app(firebaseconfig.firebase_config)
@@ -46,13 +46,15 @@ def index():
         query = request.form['query']
         feed_urls = geturls.get_feed_urls(query)
     else:
-        query = "AI"  # default search query
+        query = "Technology"  # default search query
         feed_urls = geturls.get_feed_urls(query)
 
     articles = []
     for url in feed_urls:
-        articles += parsefeed.parse_feed(url)
-        if len(articles) >= 6:
+        response=requests.get(url)
+        actualurl=response.url
+        articles += parsefeed.parse_feed(actualurl)
+        if len(articles) >= 8:
             break
 
     unique_articles = []
