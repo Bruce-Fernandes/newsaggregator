@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+    <title>Tech News Aggregator</title>
+</head>
+<body>
+    <h1>Tech News Aggregator</h1>
+    <ul>
+        {% for article in articles %}
+        <li>
+            <a href="{{ article.link }}">{{ article.title }}</a>
+            <p>{{ article.summary }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
