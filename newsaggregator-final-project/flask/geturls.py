@@ -1,9 +1,11 @@
 from urllib.parse import urlencode
 def get_feed_urls(query):
+    modquery="technology news related to"+query
+
     urls = []
     base_url = "https://news.google.com"
     params = {
-        "q": query,
+        "q":  query,
         "hl": "en-US",
         "gl": "US",
         "ceid": "US:en"
